@@ -53,7 +53,7 @@ extern "C" {
 #define SYS_TIM_FREQ_DEFAULT    (50)          // Default timer frequency / 默认定时器频率
 #define SYS_VREF_MV             (3300)        // System reference voltage in mV / 系统参考电压 (mV)
 #define IAP_UPDATE_KEY          (0xA5)        // Key for IAP update / IAP 更新密钥
-#define FIRMWARE_VERSION        (0x01)        // Firmware version identifier / 固件版本标识符
+#define FIRMWARE_VERSION        (0x02)        // Firmware version identifier / 固件版本标识符
 #define I2C_DEFAULT_ADDR        (0x25)        // Default I2C slave address / 默认 I2C 从机地址
 
 /**

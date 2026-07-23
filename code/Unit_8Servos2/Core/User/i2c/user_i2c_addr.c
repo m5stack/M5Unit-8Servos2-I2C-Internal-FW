@@ -24,7 +24,7 @@
  * @retval Calculated offset (0-15).
  *         计算出的偏移量 (0-15)。
  */
-static uint8_t get_addr_offset(void)
+uint8_t i2c_addr_get_offset(void)
 {
     // The '~' operator inverts the logic because inputs are typically pulled up
     // and switches connect to ground (Low = Active/1).
@@ -48,5 +48,5 @@ void i2c_addr_init(void)
 {
     // Calculate final address: Default Address + Hardware Offset
     // 计算最终地址：默认地址 + 硬件偏移量
-    i2c_addr_reg = I2C_DEFAULT_ADDR + get_addr_offset();
+    i2c_addr_reg = I2C_DEFAULT_ADDR + i2c_addr_get_offset();
 }

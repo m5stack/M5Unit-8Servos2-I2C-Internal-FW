@@ -173,8 +173,13 @@ extern "C" {
 #define REG_SYS_CURRENT_LOW      (0xF6)
 #define REG_SYS_CURRENT_HIGH     (0xF7)
 
+// Hardware address locator (Read-Only)
+// 硬件地址定位器（只读）
+#define REG_ADDR_OFFSET (0xF8)
+
 // Firmware Update & Info
 // 固件更新与信息
+#define REG_I2C_ADDR_REFRESH (0xFC)  // Refresh address from locator (Write-Only) / 根据定位器刷新地址（只写）
 #define REG_IAP_UPDATE_ADDR (0xFD)  // IAP Update Key / IAP 更新密钥
 #define REG_SW_VER          (0xFE)  // Software Version / 软件版本
 #define REG_I2C_ADDR        (0xFF)  // Current I2C Address / 当前 I2C 地址

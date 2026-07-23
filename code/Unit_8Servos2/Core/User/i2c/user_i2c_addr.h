@@ -23,6 +23,12 @@ extern "C" {
  */
 void i2c_addr_init(void);
 
+/**
+ * @brief Read the current hardware address locator value (0-15).
+ *        读取当前硬件地址定位器值（0-15）。
+ */
+uint8_t i2c_addr_get_offset(void);
+
 #ifdef __cplusplus
 }
 #endif

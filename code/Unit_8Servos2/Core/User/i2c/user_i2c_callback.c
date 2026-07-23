@@ -4,24 +4,26 @@
  * SPDX-License-Identifier: MIT
  */
 #include "user_i2c_callback.h"
+#include "user_i2c_addr.h"
 #include <string.h>  // for memcpy
 
 // Internal variable for timeout logic
 static volatile uint32_t i2c_stop_timeout_delay = 0;
-static uint8_t g_uid[UID_REG_LENGTH]            = {0};
+static volatile uint8_t i2c_addr_refresh_pending = 0;
+static uint8_t g_uid[UID_REG_LENGTH]             = {0};
 
 // --- Global Variable Definitions ---
 // --- 全局变量定义 ---
 
-volatile uint8_t gpio_mode_changed[8]  = {0};  // Flag for each PIN mode change / 每个引脚的模式变化标志
-volatile uint8_t gpio_mode_changed_any = 0;    // Flag for ANY PIN mode change / 任意引脚模式变化标志
+volatile uint8_t gpio_mode_changed[8]         = {0};  // Flag for each PIN mode change / 每个引脚的模式变化标志
+volatile uint8_t gpio_mode_changed_any        = 0;    // Flag for ANY PIN mode change / 任意引脚模式变化标志
 volatile uint8_t gpio_servo_angle_changed[8]  = {0};  // Flag for Servo angle change / 舵机角度变化标志
-volatile uint8_t gpio_servo_angle_changed_any = 0;  // Flag for ANY Servo angle change / 任意舵机角度变化标志
+volatile uint8_t gpio_servo_angle_changed_any = 0;    // Flag for ANY Servo angle change / 任意舵机角度变化标志
 volatile uint8_t gpio_pwm_duty_changed[8]     = {0};  // Flag for PWM duty change / PWM 占空比变化标志
 volatile uint8_t gpio_pwm_duty_changed_any    = 0;    // Flag for ANY PWM duty change / 任意 PWM 占空比变化标志
 volatile uint8_t gpio_rgb_buf_changed_any     = 0;    // Flag for RGB buffer update / RGB 缓冲区更新标志
 volatile uint8_t tim_freq_changed[2]          = {0};  // Flag for Timer freq change / 定时器频率变化标志
-volatile uint8_t tim_freq_changed_any = 0;  // Flag for ANY Timer freq change / 任意定时器频率变化标志
+volatile uint8_t tim_freq_changed_any         = 0;    // Flag for ANY Timer freq change / 任意定时器频率变化标志
 
 // Default Register Values
 // 默认寄存器值
@@ -175,7 +177,12 @@ void Slave_Complete_Callback(uint8_t *rx_data, uint16_t len)
             i2c1_set_send_data((uint8_t *)&tx_buf[rx_data[0] - REG_SYS_REF_VOLTAGE_LOW],
                                REG_SYS_CURRENT_HIGH - rx_data[0] + 1);
         }
-        // 13. Version & Address
+        // 13. Hardware address locator
+        else if (rx_data[0] == REG_ADDR_OFFSET) {
+            tx_buf[0] = i2c_addr_get_offset();
+            i2c1_set_send_data(tx_buf, 1);
+        }
+        // 14. Version & Address
         else if (rx_data[0] >= REG_SW_VER && rx_data[0] <= REG_I2C_ADDR) {
             tx_buf[0] = fw_version_reg;
             tx_buf[1] = i2c_addr_reg;
@@ -317,13 +324,32 @@ void Slave_Complete_Callback(uint8_t *rx_data, uint16_t len)
                 }
             }
         }
-        // 9. IAP Firmware Update Trigger
+        // 9. Refresh I2C address from the hardware locator
+        else if (rx_data[0] == REG_I2C_ADDR_REFRESH && len == 2) {
+            i2c_addr_refresh_pending = 1;
+        }
+        // 10. IAP Firmware Update Trigger
         else if (rx_data[0] == REG_IAP_UPDATE_ADDR && len == 2) {
             if (rx_data[1] == IAP_UPDATE_KEY) {
                 NVIC_SystemReset();  // Trigger system reset for bootloader / 复位单片机触发升级
             }
         }
     }
+}
+
+void i2c_addr_refresh_handler(void)
+{
+    if (!i2c_addr_refresh_pending) {
+        return;
+    }
+
+    i2c_addr_refresh_pending = 0;
+    i2c1_it_disable();
+    LL_I2C_Disable(I2C1);
+    LL_I2C_DeInit(I2C1);
+    i2c_addr_init();
+    user_i2c_init();
+    i2c1_it_enable();
 }
 
 /**

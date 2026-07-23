@@ -76,6 +76,12 @@ void Slave_Complete_Callback(uint8_t *rx_data, uint16_t len);
  */
 void i2c_timeout_handler(void);
 
+/**
+ * @brief Apply a pending I2C address refresh request outside the IRQ context.
+ *        在中断上下文之外执行待处理的 I2C 地址刷新请求。
+ */
+void i2c_addr_refresh_handler(void);
+
 #ifdef __cplusplus
 }
 #endif

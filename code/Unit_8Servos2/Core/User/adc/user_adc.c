@@ -108,7 +108,7 @@ void user_adc_init(uint8_t gpio)
  */
 void user_adc_update(void)
 {
-    uint32_t temp = 0;  // Changed to uint32_t to match LL macro return type / 修改为 uint32_t 以匹配 LL 宏返回类型
+    uint32_t temp    = 0;  // Changed to uint32_t to match LL macro return type / 修改为 uint32_t 以匹配 LL 宏返回类型
     uint16_t adc_raw = 0;
 
     // 1. Reference Voltage / 参考电压

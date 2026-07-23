@@ -12,8 +12,8 @@ volatile uint8_t aReceiveBuffer[I2C_RECEIVE_BUFFER_LEN];
 // 发送缓冲区：存储等待发送给主机的数据
 volatile uint8_t tx_buffer[I2C_RECEIVE_BUFFER_LEN];
 
-volatile uint16_t ubReceiveIndex = 0;  // Current RX index / 当前接收索引
-volatile uint8_t i2c_addr = 0;  // Local copy of Slave Address (Left aligned) / 从机地址本地副本 (左对齐)
+volatile uint16_t ubReceiveIndex  = 0;  // Current RX index / 当前接收索引
+volatile uint8_t i2c_addr         = 0;  // Local copy of Slave Address (Left aligned) / 从机地址本地副本 (左对齐)
 volatile uint16_t tx_buffer_index = 0;  // Current TX index / 当前发送索引
 volatile uint16_t tx_len          = 0;  // Total length to send / 发送总长度
 

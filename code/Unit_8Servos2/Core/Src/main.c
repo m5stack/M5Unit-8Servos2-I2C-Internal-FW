@@ -145,6 +145,7 @@ int main(void)
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1) {
+        i2c_addr_refresh_handler();
         i2c_timeout_handler();
         user_sys_gpio_mode_update();
         user_adc_update();
